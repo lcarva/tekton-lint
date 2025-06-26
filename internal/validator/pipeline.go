@@ -46,7 +46,7 @@ func ValidatePipeline(ctx context.Context, p v1.Pipeline) error {
 		allTaskResultRefs[pipelineTask.Name] = v1.PipelineTaskResultRefs(&pipelineTask)
 		params := pipelineTask.Params
 
-		taskSpec, err := taskSpecFromPipelineTask(ctx, pipelineTask)
+		taskSpec, err := TaskSpecFromPipelineTask(ctx, pipelineTask)
 		if err != nil {
 			return fmt.Errorf("retrieving task spec from %s pipeline task: %w", pipelineTask.Name, err)
 		}
@@ -78,7 +78,7 @@ func ValidatePipeline(ctx context.Context, p v1.Pipeline) error {
 	return nil
 }
 
-func taskSpecFromPipelineTask(ctx context.Context, pipelineTask v1.PipelineTask) (*v1.TaskSpec, error) {
+func TaskSpecFromPipelineTask(ctx context.Context, pipelineTask v1.PipelineTask) (*v1.TaskSpec, error) {
 	// Embedded task spec
 	if pipelineTask.TaskSpec != nil {
 		// Custom Tasks are not supported
