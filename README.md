@@ -16,6 +16,67 @@ It currently supports the following:
   [PaC resolver](https://docs.openshift.com/pipelines/1.11/pac/using-pac-resolver.html),
   [Bundles resolver](https://tekton.dev/docs/pipelines/bundle-resolver/), and embedded Task
   definitions.
+* **Expand Tekton pipelines and pipelineruns with resolvers to fully inlined YAML** (see below)
+
+## Expand Command
+
+Tektor can output a fully expanded Tekton Pipeline or PipelineRun, resolving all supported resolvers (bundles, git) and inlining the full `taskSpec` for each task.
+
+### Usage
+
+```sh
+tektor expand pipeline.yaml > expanded-pipeline.yaml
+```
+
+- Takes a Pipeline or PipelineRun YAML as input
+- Resolves all `taskRef` resolvers (bundles, git) to inline `taskSpec`
+- Outputs the fully expanded YAML to stdout
+- Handles both `Pipeline` and `PipelineRun` resources
+- The output can be applied directly to a cluster without needing resolvers
+
+### Example
+
+**Input:**
+```yaml
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: example-pipeline
+spec:
+  tasks:
+  - name: build
+    taskRef:
+      resolver: bundles
+      params:
+      - name: bundle
+        value: quay.io/tekton-catalog/task-buildah:0.1@sha256:abc123
+      - name: name
+        value: buildah
+      - name: kind
+        value: task
+```
+
+**Command:**
+```sh
+tektor expand pipeline.yaml > expanded-pipeline.yaml
+```
+
+**Output:**
+```yaml
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: example-pipeline
+spec:
+  tasks:
+  - name: build
+    taskSpec:
+      steps:
+      - name: build
+        image: quay.io/buildah/stable
+        script: |
+          # ... full task definition from bundle
+```
 
 Future work:
 

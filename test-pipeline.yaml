@@ -1,0 +1,26 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: example-pipeline
+spec:
+  tasks:
+  - name: build
+    taskRef:
+      resolver: bundles
+      params:
+      - name: bundle
+        value: quay.io/tekton-catalog/task-buildah:0.1@sha256:abc123
+      - name: name
+        value: buildah
+      - name: kind
+        value: task
+  - name: test
+    taskRef:
+      resolver: git
+      params:
+      - name: url
+        value: https://github.com/tektoncd/catalog.git
+      - name: revision
+        value: main
+      - name: pathInRepo
+        value: task/git-clone/0.9/git-clone.yaml 

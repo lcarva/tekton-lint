@@ -6,6 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/lcarva/tektor/cmd/expand"
 	"github.com/lcarva/tektor/cmd/validate"
 )
 
@@ -23,4 +24,5 @@ func Execute() {
 
 func init() {
 	rootCmd.AddCommand(validate.ValidateCmd)
+	rootCmd.AddCommand(expand.ExpandCmd)
 }
