@@ -27,6 +27,11 @@ inputs:
     required: false
     default: ''
 
+  task-dir:
+    description: 'Directory to recursively search for missing Tasks referenced by the Pipeline'
+    required: false
+    default: ''
+
 outputs:
   validated-files:
     description: 'Number of files that were validated'
@@ -57,5 +62,6 @@ runs:
         VERBOSE: ${{ inputs.verbose }}
         TEKTOR_PARAMS: ${{ inputs.params }}
         TEKTOR_PAC_PARAMS: ${{ inputs.pac-params }}
+        TEKTOR_TASK_DIR: ${{ inputs.task-dir }}
       run: |
         ${{ github.action_path }}/validate.sh

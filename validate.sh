@@ -87,6 +87,14 @@ validate_file() {
         log_info "Parameter array: ${param_args[*]}"
     fi
 
+    # If TEKTOR_TASK_DIR is provided, add it to args
+    if [[ -n "${TEKTOR_TASK_DIR:-}" ]]; then
+        param_args+=("--task-dir" "${TEKTOR_TASK_DIR}")
+        if [[ "$VERBOSE" == "true" ]]; then
+            log_info "Using --task-dir ${TEKTOR_TASK_DIR}"
+        fi
+    fi
+
     # Execute tektor with parameters and capture output
     local tektor_output
     local tektor_exit_code

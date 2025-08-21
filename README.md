@@ -18,6 +18,15 @@ It currently supports the following:
   definitions.
 * Resolve remote Tasks via [git resolver](https://tekton.dev/docs/pipelines/git-resolver/).
 * Specify runtime parameters that may be used in resolver parameter values
+* Resolve missing Tasks from a local directory with `--task-dir` when a `TaskRef` names a Task without a resolver
+
+## CLI usage
+
+Validate a Pipeline and search for referenced Tasks in a local directory tree:
+
+```bash
+tektor validate path/to/pipeline.yaml --task-dir path/to/tasks
+```
 
 Future work:
 
