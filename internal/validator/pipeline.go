@@ -91,7 +91,28 @@ func ValidatePipeline(ctx context.Context, p v1.Pipeline, runtimeParams map[stri
 		paramSpecs := taskSpec.Params
 		allTaskResults[pipelineTask.Name] = taskSpec.Results
 
-		if err := ValidateParameters(params, paramSpecs); err != nil {
+		// Matrix parameters are not present in pipelineTask.Params at authoring time.
+		// Tekton expands matrix values into concrete TaskRuns at runtime, providing
+		// the matrix parameters to each expanded TaskRun. For validation purposes,
+		// synthesize parameter entries for any parameters provided via matrix so
+		// that required-parameter checks pass and type checks align with the Task spec.
+		effectiveParams := make(v1.Params, 0, len(params))
+		effectiveParams = append(effectiveParams, params...)
+		if pipelineTask.Matrix != nil {
+			for _, matrixParam := range pipelineTask.Matrix.Params {
+				// Skip if already provided explicitly
+				if _, found := getPipelineTaskParam(matrixParam.Name, effectiveParams); found {
+					continue
+				}
+				// Find the expected type from the Task spec and synthesize a placeholder value
+				if specParam, found := getTaskParam(matrixParam.Name, paramSpecs); found {
+					pv := v1.ParamValue{Type: specParam.Type}
+					effectiveParams = append(effectiveParams, v1.Param{Name: matrixParam.Name, Value: pv})
+				}
+			}
+		}
+
+		if err := ValidateParameters(effectiveParams, paramSpecs); err != nil {
 			return fmt.Errorf("ERROR: %s PipelineTask: %s", pipelineTask.Name, err)
 		}
 	}

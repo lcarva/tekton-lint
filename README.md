@@ -18,6 +18,7 @@ It currently supports the following:
   definitions.
 * Resolve remote Tasks via [git resolver](https://tekton.dev/docs/pipelines/git-resolver/).
 * Specify runtime parameters that may be used in resolver parameter values
+* Validate PipelineTasks that use `matrix` by treating matrix-provided params as present
 
 Future work:
 
