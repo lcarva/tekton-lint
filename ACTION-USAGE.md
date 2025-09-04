@@ -43,6 +43,7 @@ jobs:
         with:
           fail-on-error: true
           verbose: true
+          task-dir: path/to/local/tasks
           params: |
             taskGitUrl=https://github.com/tektoncd/catalog
             gitRevision=main
@@ -126,6 +127,20 @@ You can use both parameter types together for comprehensive validation:
     pac-params: |
       revision=main
       branch=development
+
+### Local Task Directory (`task-dir`)
+
+Use `task-dir` to tell Tektor where to recursively search for missing Tasks referenced by `taskRef.name` in your Pipeline when no resolver is specified. This is useful for testing or when Tasks are not yet available in a cluster or remote resolver.
+
+```yaml
+- name: Validate Tekton resources with local tasks
+  uses: ./.github/actions/tektor
+  env:
+    CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+  with:
+    task-dir: ./tasks
+    verbose: true
+```
 ```
 
 ### Dynamic Parameter Values

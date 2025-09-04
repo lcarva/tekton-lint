@@ -29,6 +29,7 @@ func (e UnsupportedResourceError) Error() string {
 var (
 	runtimeParams []string
 	pacParams     []string
+	taskDir       string
 )
 
 var ValidateCmd = &cobra.Command{
@@ -45,13 +46,18 @@ var ValidateCmd = &cobra.Command{
 		if err != nil {
 			return fmt.Errorf("parsing PaC parameters: %w", err)
 		}
-		return run(cmd.Context(), args[0], params, pacParamsMap)
+		ctx := cmd.Context()
+		if taskDir != "" {
+			ctx = validator.WithTaskDir(ctx, taskDir)
+		}
+		return run(ctx, args[0], params, pacParamsMap)
 	},
 }
 
 func init() {
 	ValidateCmd.Flags().StringArrayVar(&runtimeParams, "param", []string{}, "Runtime parameters in format key=value (can be specified multiple times)")
 	ValidateCmd.Flags().StringArrayVar(&pacParams, "pac-param", []string{}, "PaC template parameters in format key=value (can be specified multiple times)")
+	ValidateCmd.Flags().StringVar(&taskDir, "task-dir", "", "Directory to recursively search for missing Tasks referenced by the Pipeline")
 }
 
 func parseRuntimeParams(params []string) (map[string]string, error) {
